@@ -1,3 +1,10 @@
+/*
+Team SALTY -- Sadia Azmine, Lucy Tang, Jessica Yang 
+APCS2 pd9
+HW46 -- Running M[edi]an
+2016-05-26
+*/
+
 /*****************************************************
  * class RunMed
  * Implements an online algorithm to track the median of a growing dataset
@@ -20,7 +27,8 @@ public class RunMed {
      *****************************************************/
     public RunMed() 
     { 
-
+        leftHeap = new ALMaxHeap();
+        rightHeap = new ALMinHeap();
     }//O(1)
 
 
@@ -30,7 +38,15 @@ public class RunMed {
      *****************************************************/
     public double getMedian() 
     {
-
+        if ( isEmpty() )
+            System.out.println("can't find median");
+        else if (rightHeap.isEmpty())
+            return leftHeap.peekMax();
+        else if (rightHeap.getSize() > leftHeap.getSize())
+            return rightHeap.peekMin();
+        else if ( leftHeap.getSize() > rightHeap.getSize() )
+            return leftHeap.peekMax(); 
+        return ( leftHeap.peekMax() + rightHeap.peekMin() ) / 2.0;
     }//O(1)
 
 
@@ -42,6 +58,23 @@ public class RunMed {
      *****************************************************/
     public void insert( int addVal )
     {   
+        if ( leftHeap.isEmpty() )
+            leftHeap.add( addVal );
+        else if ( rightHeap.isEmpty() )
+            rightHeap.add( addVal );
+        else{
+        if ( addVal < leftHeap.peekMax() )
+            leftHeap.add( addVal );
+        else if ( addVal >= leftHeap.peekMax() )
+            rightHeap.add( addVal );
+            
+        if ( Math.abs( leftHeap.getSize() - rightHeap.getSize() ) > 1 ) {
+            if ( leftHeap.getSize() > rightHeap.getSize() )
+                rightHeap.add(leftHeap.removeMax() );
+            else 
+                leftHeap.add( rightHeap.removeMin() );
+            }   
+        }
      }//O(?)
 
 
@@ -52,15 +85,15 @@ public class RunMed {
      *****************************************************/
     public boolean isEmpty() 
     {
-
-    }//O(?)
+        return leftHeap.isEmpty() && rightHeap.isEmpty();
+    }//O(1)
 
 
 
     //main method for testing
     public static void main( String[] args ) {
 
-	/*~~~V~~~~~~~~~~~~move~me~down~~~~~~~~~~~~~V~~~
+	
         RunMed med = new RunMed();
         med.insert(1);
 	System.out.println( med.getMedian() ); //1
@@ -72,6 +105,7 @@ public class RunMed {
 	System.out.println( med.getMedian() ); //4
         med.insert(9);
 	System.out.println( med.getMedian() ); //5
+	/*~~~V~~~~~~~~~~~~move~me~down~~~~~~~~~~~~~V~~~
 	~~~~~|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|~~~*/
 
     }//end main()
